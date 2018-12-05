@@ -39,6 +39,10 @@ public class FactionMember implements Convertible {
         return Bukkit.getOfflinePlayer(uniqueId);
     }
 
+    public static FactionMember getFactionMember(UUID uniqueId) {
+        return Serializer.getFactionMember(uniqueId);
+    }
+
     @Override
     public void save(ConfigurationSection section) {
 

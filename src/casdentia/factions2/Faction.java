@@ -31,12 +31,21 @@ public class Faction implements Convertible {
         return members;
     }
 
+    public boolean removeMember(FactionMember factionMember) {
+        //TODO What if the member is the leader?
+        return members.remove(factionMember);
+    }
+
     public Set<FactionClaim> getFactionClaims() {
         return factionClaims;
     }
 
     public void addClaim(Chunk chunk) {
         factionClaims.add(new FactionClaim(chunk, this));
+    }
+
+    public static Faction getFactionOf(FactionMember factionMember) {
+        return Serializer.getFactionOf(factionMember);
     }
 
     @Override
