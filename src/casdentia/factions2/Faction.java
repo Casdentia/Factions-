@@ -11,22 +11,20 @@ public class Faction implements Convertible {
 
     }
 
-    public Faction(String name) {
+    public Faction(String name, FactionsPlayer factionsPlayer) {
         this.name = name;
+        factionsPlayer.setFaction(this);
+        factionsPlayer.setRank(FactionRank.LEADER);
     }
 
     public String getName() {
         return name;
     }
 
-    public int getBalance() {
-        return balance;
-    }
-
     @Override
     public void save(ConfigurationSection section) {
         section.createSection(name);
-        section.set(name + ".balance", balance);
+        section.set(name+ ".balance", balance);
     }
 
     @Override

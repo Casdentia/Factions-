@@ -2,7 +2,7 @@ package casdentia.factions2;
 
 public enum FactionRank {
 
-    DEFAULT("default"), LEADER("leader"), NONE("none");
+    NONE("None"), DEFAULT("Default"),LEADER("Leader");
 
     private String name;
 
