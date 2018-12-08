@@ -1,74 +1,37 @@
 package casdentia.factions2;
 
-import org.bukkit.Chunk;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Player;
-
-import java.util.HashSet;
-import java.util.Set;
 
 public class Faction implements Convertible {
 
     private String name;
-    private Set<FactionMember> members = new HashSet<>();
-    private Set<FactionClaim> factionClaims = new HashSet<>();
+    private int balance;
 
     public Faction() {
 
     }
 
-    public Faction(String name, Player leader) {
+    public Faction(String name) {
         this.name = name;
-
-        members.add(new FactionMember(leader, FactionRank.LEADER));
     }
 
     public String getName() {
         return name;
     }
 
-    public Set<FactionMember> getMembers() {
-        return members;
-    }
-
-    public boolean removeMember(FactionMember factionMember) {
-        //TODO What if the member is the leader?
-        return members.remove(factionMember);
-    }
-
-    public Set<FactionClaim> getFactionClaims() {
-        return factionClaims;
-    }
-
-    public void addClaim(Chunk chunk) {
-        factionClaims.add(new FactionClaim(chunk, this));
-    }
-
-    public static Faction getFactionOf(FactionMember factionMember) {
-        return Serializer.getFactionOf(factionMember);
+    public int getBalance() {
+        return balance;
     }
 
     @Override
     public void save(ConfigurationSection section) {
-
-        //FIXME Not checking if a configuration section exists before creation may result in unexpected behavior.
-        ConfigurationSection nameSection = section.createSection(name);
-        ConfigurationSection membersSection = nameSection.createSection("members");
-
-        members.forEach(member -> member.save(membersSection));
+        section.createSection(name);
+        section.set(name + ".balance", balance);
     }
 
     @Override
     public void load(ConfigurationSection section) {
-
         name = section.getName();
-
-        ConfigurationSection membersSection = section.getConfigurationSection("members");
-
-        for (String key : membersSection.getKeys(false)) {
-            FactionMember member = new FactionMember();
-            member.load(membersSection.getConfigurationSection(key));
-            members.add(member);
-        }
+        balance = section.getInt(name + ".balance");
     }
 }

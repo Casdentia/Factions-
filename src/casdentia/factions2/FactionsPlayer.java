@@ -5,26 +5,40 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
+import java.util.Optional;
 import java.util.UUID;
 
-public class FactionMember implements Convertible {
+public class FactionsPlayer implements Convertible {
 
+    private Faction faction;
     private FactionRank factionRank;
 
     private UUID uniqueId;
 
-    public FactionMember() {
+    public FactionsPlayer() {
 
     }
 
-    public FactionMember(Player player, FactionRank factionRank) {
+    public FactionsPlayer(Player player, FactionRank factionRank) {
         this.factionRank = factionRank;
         this.uniqueId = player.getUniqueId();
     }
 
-    public FactionMember(UUID uniqueId, FactionRank factionRank) {
+    public FactionsPlayer(UUID uniqueId, FactionRank factionRank) {
         this.factionRank = factionRank;
         this.uniqueId = uniqueId;
+    }
+
+    public void setFaction(Faction faction) {
+        this.faction = faction;
+    }
+
+    public boolean hasFaction() {
+        return faction != null;
+    }
+
+    public Faction getFaction() {
+        return faction;
     }
 
     public FactionRank getFactionRank() {
@@ -39,21 +53,21 @@ public class FactionMember implements Convertible {
         return Bukkit.getOfflinePlayer(uniqueId);
     }
 
-    public static FactionMember getFactionMember(UUID uniqueId) {
-        return Serializer.getFactionMember(uniqueId);
-    }
-
     @Override
     public void save(ConfigurationSection section) {
 
-        ConfigurationSection memberSection = section.createSection(uniqueId.toString());
+        ConfigurationSection playerSection = section.createSection(uniqueId.toString());
 
-        memberSection.set("rank", factionRank.name());
+        playerSection.set("faction", faction);
+        playerSection.set("rank", factionRank.name());
     }
 
     @Override
     public void load(ConfigurationSection section) {
         uniqueId = UUID.fromString(section.getName());
+        FactionsPlugin plugin = FactionsPlugin.getInstance();
+        Optional<Faction> factionOptional = plugin.getFaction(section.getString("faction"));
+        faction = factionOptional.orElse(null);
         factionRank = FactionRank.valueOf(section.getString("rank"));
     }
 }
