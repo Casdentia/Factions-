@@ -3,12 +3,8 @@ package casdentia.factions2;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
-import java.util.HashSet;
-import java.util.Set;
 
 public class FactionsManager {
-
-    public static Set<Faction> factions = new HashSet<>();
 
     public static boolean checkExistence(String name) {
         File file = new File(FileDirectory.FACTIONS);
@@ -21,9 +17,10 @@ public class FactionsManager {
         File file = new File(FileDirectory.FACTIONS);
         YamlConfiguration configuration = YamlConfiguration.loadConfiguration(file);
 
-        Faction faction = new Faction();
+        Faction faction = null;
         for (String key : configuration.getKeys(false)) {
             if (key.equalsIgnoreCase(name)) {
+                faction = new Faction();
                 faction.load(configuration.getConfigurationSection(key));
                 return faction;
             }

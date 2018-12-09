@@ -1,5 +1,6 @@
 package casdentia.factions2;
 
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -30,6 +31,10 @@ public class FactionsPlayer implements Convertible {
         return player;
     }
 
+    public FactionRank getRank() {
+        return rank;
+    }
+
     public void setRank(FactionRank rank) {
         this.rank = rank;
     }
@@ -54,15 +59,16 @@ public class FactionsPlayer implements Convertible {
     public void save(ConfigurationSection section) {
         String uniqueId = player.getUniqueId().toString();
         section.createSection(uniqueId);
-        section.set(uniqueId + ".faction", hasFaction() ? faction.getName() : "");
+        section.set(uniqueId + ".faction", hasFaction() ? faction.getName() : null);
         section.set(uniqueId + ".rank", rank.name());
     }
 
     @Override
     public void load(ConfigurationSection section) {
+        player = Bukkit.getPlayer(UUID.fromString(section.getName()));
         String factionName = section.getString("faction");
         faction = FactionsManager.getFaction(factionName);
-        rank = FactionRank.valueOf(section.getString(".rank"));
+        rank = FactionRank.valueOf(section.getString("rank"));
     }
 
     /* Static methods */

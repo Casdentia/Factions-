@@ -1,5 +1,6 @@
 package casdentia.factions2;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -64,7 +65,7 @@ public class FactionCommand implements CommandExecutor {
 
             Invitation invitation = InviteManager.find(player, name);
             if (invitation == null) {
-                player.sendMessage("You don't have any pending invitations.");
+                player.sendMessage("You don't have any pending invitations for that faction.");
                 return true;
             }
 
@@ -74,7 +75,38 @@ public class FactionCommand implements CommandExecutor {
             factionsPlayer.setFaction(faction);
             factionsPlayer.save();
 
-            player.sendMessage(ChatColor.GREEN + "Joined the faction " + faction.getName() + ".");
+            InviteManager.remove(invitation);
+
+            player.sendMessage(ChatColor.GREEN + "You have joined " + faction.getName() + ".");
+        }
+
+        if (args[0].equalsIgnoreCase("invite")) {
+
+            FactionsPlayer factionsPlayer = FactionsPlayer.get(player);
+            if (!factionsPlayer.hasFaction()) {
+                player.sendMessage(ChatColor.RED + "You are not in a faction.");
+                return true;
+            }
+
+            if (factionsPlayer.getRank().getValue() < FactionRank.MODERATOR.getValue()) {
+                player.sendMessage(ChatColor.RED + "You must be a moderator or higher to invite others.");
+                return true;
+            }
+
+            String name = args[1];
+            Player invitee = Bukkit.getPlayer(name);
+            if (invitee == null) {
+                player.sendMessage(ChatColor.RED + "Could not find player with name " + args[0] + ".");
+                return true;
+            }
+
+            Invitation invitation = new Invitation(invitee, factionsPlayer.getFaction());
+            if (InviteManager.add(invitation)) {
+                invitee.sendMessage(ChatColor.YELLOW + player.getName() + " invited you to join their faction.");
+                player.sendMessage(ChatColor.GREEN + "Invitation sent.");
+            } else {
+                player.sendMessage(ChatColor.RED + "An invitation has already been sent to this player.");
+            }
         }
 
         return true;
